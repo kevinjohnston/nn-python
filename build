@@ -1,0 +1,96 @@
+#!/bin/bash
+
+#######################################################
+##### CONSTANTS
+#######################################################
+PROJECT_NAME=nn_python
+PROJECT_ROOT_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )/"
+SRC_DIR=${PROJECT_ROOT_DIR}src/
+TEST_DIR=${PROJECT_ROOT_DIR}tests/
+BIN_DIR=${PROJECT_ROOT_DIR}bin/
+HTML_DIR=${PROJECT_ROOT_DIR}bin/html/
+TEST_REPORT_FILE=report.html
+TEST_REPORT_PATH=$BIN_DIR$TEST_REPORT_FILE
+
+
+#######################################################
+##### VARIABLES
+#######################################################
+COMMAND=${1:-run}
+
+#######################################################
+##### FUNCTIONS
+#######################################################
+validate_inputs(){
+  # check for python3
+  which python3 >/dev/null
+  if [ $? -eq 1 ]; then
+    echo python3 not on PATH
+  fi
+  # check for pytest
+  PATH=$PYTHONPATH$PATH which pytest >/dev/null
+  if [ $? -eq 1 ] && [[ $COMMAND == $CMD_TEST ]]; then
+    echo pytest not on PYTHONPATH, tests cant be run
+  fi
+}
+
+setup(){
+  # create directory to hold generated files
+  if [ ! -d "$BIN_DIR" ]; then
+    mkdir -p "$BIN_DIR"
+  fi
+  # create directory to hold generated documentation
+  if [ ! -d "$HTML_DIR" ]; then
+    mkdir -p "$HTML_DIR"
+  fi
+}
+
+##### command functions
+run(){
+  PYTHONPATH=$SRC_DIR:${PYTHONPATH} python3 ${SRC_DIR}${PROJECT_NAME}/main.py
+}
+
+lint(){
+  pycodestyle $PROJECT_ROOT_DIR
+}
+
+test(){
+  PYTHONPATH=$SRC_DIR:${PYTHONPATH} pytest --disable-pytest-warnings --html=${TEST_REPORT_PATH}
+}
+
+doc(){
+  cd $HTML_DIR
+  PYTHONPATH=$SRC_DIR:${PYTHONPATH} pydoc3 -w $SRC_DIR/$PROJECT_NAME/*
+  cd - >/dev/null
+}
+
+clean(){
+  rm -rf "$BIN_DIR"
+}
+
+lint_forever(){
+  while [ true ]; do
+    echo "linting..."
+    lint
+    echo "...done linting"
+    sleep 5
+    clear
+  done
+}
+
+test_forever(){
+  while [ true ]; do
+    echo "testing..."
+    test
+    echo "...done testing"
+    sleep 10
+    clear
+  done
+}
+
+#######################################################
+##### LOGIC
+#######################################################
+validate_inputs
+setup
+eval $COMMAND
