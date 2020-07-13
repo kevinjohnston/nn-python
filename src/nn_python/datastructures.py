@@ -11,33 +11,58 @@ from collections.abc import Iterable
 # Validators
 
 def is_signal_in(x):
+    """
+    Used for validating an input signal
+
+    :param weight: any value
+    :returns: boolean indicating if the input is an input signal
+    """
     return (isinstance(x, float) or
             isinstance(x, int))
 
 
 def is_signal_out(x):
+    """
+    Used for validating an output signal
+
+    :param weight: any value
+    :returns: boolean indicating if the input is an output signal
+    """
     return ((isinstance(x, float) or
              isinstance(x, int)) and
             x <= 1.0 and
             x >= -1.0)
 
 
-def is_signal(signal):
-    return (is_signal_in(signal['signal_in']) and
-            is_signal_out(signal['signal_out']))
-
-
 def is_delta(delta):
+    """
+    Used for validating a delta
+
+    :param weight: any value
+    :returns: boolean indicating if the input is a delta
+    """
     return (isinstance(delta, float) or
             isinstance(delta, int))
 
 
 def is_weight(weight):
+    """
+    Used for validating a weight
+
+    :param weight: any value
+    :returns: boolean indicating if the input is a weight
+    """
     return (isinstance(weight, float) or
             isinstance(weight, int))
 
 
 def is_bias(bias):
+    """
+    Used for validating a bias
+
+    :param bias: any value
+    :returns: boolean indicating if the input is a bias
+    """
     return ((isinstance(bias, float) or
              isinstance(bias, int))
             and bias <= 1.0 and bias >= 0.0)
